@@ -81,7 +81,9 @@
 		var map = new BMap.Map("allmap");
 		var point = new BMap.Point(113.301459, 23.092816);
 		map.centerAndZoom(point,11);
-		map.addControl(new BMap.NavigationControl());
+		// map.addControl(new BMap.NavigationControl());
+		map.enableScrollWheelZoom();
+		map.enableContinuousZoom();
 
 		function myFun(result){
 			var cityName = result.name;
@@ -130,7 +132,8 @@
 						}
 						document.getElementById("result").innerHTML = s.join("<br/><br/>");
 					}
-				}
+				},
+				renderOptions: {map: map}
 			};
 			var local = new BMap.LocalSearch(map, options);
 			local.search(word);
