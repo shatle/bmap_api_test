@@ -3,9 +3,16 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+	<link rel="stylesheet" href="./alertify.min.css">
+	<!-- <link rel="stylesheet" href="./default.min.css"> -->
+	<link rel="stylesheet" href="./bootstrap.min.css">
 	<script type="text/javascript" src="./jquery-1.9.1.min.js"></script>
 	<style type="text/css">
-	body, html, .fw-content{width: 100%;height: 100%;overflow: hidden;margin:0;font-family:"微软雅黑";}
+	body, html, .fw-content{
+		width: 100%;height: 100%;
+		overflow: hidden;
+		margin:0;font-family:"微软雅黑";
+	}
 	.fw-content > div {
 		position: fixed;
 		top: 0;
@@ -33,11 +40,15 @@
 		width: 100%;
 	}
 	#commands {
-		height: 70px;
+		height: 110px;
 		border-bottom: 2px solid #DDD;
 	}
 	#result {
 		overflow: auto;
+	}
+	#resultCount {
+		color: red;
+    font-weight: bold;
 	}
 	</style>
 	<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=XNTuIUSmOsyVxNHatYQvweYhelAt2RGz"></script>
@@ -61,8 +72,17 @@
 						<button id="btnAreaNum" class="reload-city">确定</button>
 					</div>
 					<div class="line">
-						<input type="text" id="inputSearchWord">
+						<label for="">最大结果数</label>
+						<input type="text" style="width:80px;" id="inputSearchMaxSize" value="10">
+					</div>
+					<div class="line">
+						<input type="text" style="width:80px;" id="inputSearchWord">
 						<button id="btnSearchWord">查询</button>
+						<label for="">结果数:<span id="resultCount">0</span></label>
+					</div>
+					<div class="line" title="(过大时可能会出现无结果)">
+						<label for="">当前地图视野范围内搜索</label>
+						<button id="btnSearchWordByBound">查询</button>
 					</div>
 				</div>
 				<div id="result"></div>
@@ -72,91 +92,5 @@
 	
 </body>
 </html>
-<script type="text/javascript">
-	// set height
-	jQuery(document).ready(function($) {
-		// 
-		function setResultHeight(){
-			var h = $(window).height()-100-15*2;
-			if (h< 50) { h = 50 }
-			$('#result').height(h);
-		}
-		setResultHeight();
-		$(window).resize(function(event) {
-			setResultHeight();
-		});
-
-		// 百度地图API功能
-		var map = new BMap.Map("allmap");
-		var point = new BMap.Point(113.301459, 23.092816);
-		map.centerAndZoom(point,11);
-		// map.addControl(new BMap.NavigationControl());
-		map.enableScrollWheelZoom();
-		map.enableContinuousZoom();
-
-		function myFun(result){
-			var cityName = result.name;
-			map.setCenter(cityName);
-			$('input#inputCityName').val(cityName);
-			$('input#inputAreaNum').val(11)
-		}
-		var myCity = new BMap.LocalCity();
-		myCity.get(myFun);
-		// 
-
-		// 
-		function theLocation(){
-			var city = document.getElementById("inputCityName").value;
-			var num = document.getElementById("inputAreaNum").value;
-			if(city != ""){
-				num = $.trim(num)=="" ? 11 : parseInt(num);
-				map.centerAndZoom(city,num);      // 用城市名设置地图中心点
-				$('input#inputAreaNum').val(num);
-			}
-		}
-		$('button#btnCityName').click(theLocation);
-		$('input#inputCityName').keydown(function(event) {
-			if (event.keyCode == 13){
-				theLocation();
-			}
-		});
-		$('button#btnAreaNum').click(theLocation);
-		$('input#inputAreaNum').keydown(function(event) {
-			if (event.keyCode == 13){
-				theLocation();
-			}
-		});
-		// 
-		
-		// 百度地图API功能
-		function searchWord(word){
-			var options = {
-				onSearchComplete: function(results){
-					// 判断状态是否正确
-					if (local.getStatus() == BMAP_STATUS_SUCCESS){
-						var s = [];
-						for (var i = 0; i < results.getCurrentNumPois(); i ++){
-							var poi = results.getPoi(i);
-							s.push(poi.title + ", " + poi.address+ ", "+ poi.point.lng + ", "+ poi.point.lat );
-						}
-						document.getElementById("result").innerHTML = s.join("<br/><br/>");
-					}
-				},
-				renderOptions: {map: map}
-			};
-			var local = new BMap.LocalSearch(map, options);
-			local.search(word);
-		}
-		$('#btnSearchWord').click(function(){
-			searchWord($('#inputSearchWord').val());
-		});
-		$('#inputSearchWord').keydown(function(event) {
-			if (event.keyCode == 13){
-				searchWord($('#inputSearchWord').val());
-			}
-		});
-		
-		// 
-	});
-	
-</script>
+<script type="text/javascript" src="./alertify.min.js"></script>
+<script type="text/javascript" src="./app.js"></script>
