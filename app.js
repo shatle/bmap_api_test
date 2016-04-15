@@ -93,6 +93,7 @@ jQuery(document).ready(function($) {
 		}
 		var local = new BMap.LocalSearch(map, options);
 		if (search_type=="bound"){
+			console.info('bound', map.getBounds())
 			local.searchInBounds(word, map.getBounds());
 		}else {
 			local.search(word);
