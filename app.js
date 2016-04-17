@@ -302,7 +302,7 @@ jQuery(document).ready(function($) {
 		    	// console.info('result000---', result);
 		    	var blob = new Blob([result], {type: "text/plain;charset=utf-8"});
 		    	var date = new Date();      
-					var dateStr = date.pattern("yyyyMMdd_hhmmss");
+					var dateStr = date.pattern("yyyyMMdd_HHmmss");
 					saveAs(blob, dateStr+'_'+coors.join('_')+".csv");
 		    }
 		} catch (e) {}
