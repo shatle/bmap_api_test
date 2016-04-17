@@ -70,17 +70,20 @@ jQuery(document).ready(function($) {
 
 		var options = {
 			onSearchComplete: function(results){
+				alertify.success('数据加载完成');
 				// 判断状态是否正确
 				if (local.getStatus() == BMAP_STATUS_SUCCESS){
-					alertify.success('数据加载完成');
-					console.log("--results---", results.getCurrentNumPois())
+					// console.log("--results---", results.getCurrentNumPois())
 					$('#resultCount').text(results.getCurrentNumPois());
 					var s = [];
 					for (var i = 0; i < results.getCurrentNumPois(); i ++){
 						var poi = results.getPoi(i);
 						s.push((i+1)+', '+poi.title + ", " + poi.address+ ", "+ poi.point.lng + ", "+ poi.point.lat );
 					}
-					document.getElementById("result").innerHTML = s.join("<br/><br/>");
+					$('#result').val( s.join("\n") );
+				}else {
+					$('#result').val( '' );
+					$('#resultCount').text(0);
 				}
 			},
 			pageCapacity: 80,
@@ -107,11 +110,21 @@ jQuery(document).ready(function($) {
 			var pStart = new BMap.Point(d.x,d.y);
 			var pEnd = new BMap.Point(d.maxX,d.maxY);
 			var bs = new BMap.Bounds(pStart,pEnd);   //自己规定范围
+			coors = [d.x,d.y, d.maxX,d.maxY];
+			$('#coors').text(coors.join(','))
+
 			local.searchInBounds(word, bs);
 		}else if (search_type=="bound"){
-			console.info('bound', map.getBounds())
-			local.searchInBounds(word, map.getBounds());
+			var bs = map.getBounds();
+			console.info('bound', bs)
+			coors = [bs.Je,bs.Ie, bs.Ee,bs.De];
+			$('#coors').text(coors.join(','))
+
+			local.searchInBounds(word, bs);
 		}else {
+			coors = [];
+			$('#coors').text(coors.join(','))
+			
 			local.search(word);
 		}	
 	}
@@ -140,6 +153,7 @@ jQuery(document).ready(function($) {
 
 	var click_points = [];
 	var polygon = null;
+	var coors = [];
 	function clearRect(){
 		if (polygon){ map.removeOverlay(polygon); }
 	}
@@ -230,11 +244,22 @@ jQuery(document).ready(function($) {
     return fmt;         
 	}   
 
-	var date = new Date();      
-	var dateStr = date.pattern("yyyy-MM-dd hh:mm:ss");
+	
 
 	$('#btnOutput').click(function(e){
-		
+		try {
+		    var isFileSaverSupported = !!new Blob;
+		    if (!isFileSaverSupported){
+		    	alertify.alert("当前浏览器不支持输出文件，建议下载最新chrome");
+		    }else {
+		    	var result = $('#result').val();
+		    	// console.info('result000---', result);
+		    	var blob = new Blob([result], {type: "text/plain;charset=utf-8"});
+		    	var date = new Date();      
+					var dateStr = date.pattern("yyyy-MM-dd_hh:mm:ss");
+					saveAs(blob, dateStr+'_'+coors.join('_')+".csv");
+		    }
+		} catch (e) {}
 	})
 	
 	// 

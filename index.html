@@ -40,11 +40,14 @@
 		width: 100%;
 	}
 	#commands {
-		height: 130px;
+		height: 150px;
 		border-bottom: 2px solid #DDD;
 	}
 	#result {
-		overflow: auto;
+		/*overflow: auto;*/
+		width: 100%;
+		height: 100%
+		font-size: 13px;
 	}
 	#resultCount {
 		color: red;
@@ -89,8 +92,9 @@
 						<label for="">结果数(现在最大50):<span id="resultCount">0</span></label>
 						<button id="btnOutput">结果输出文件</button>
 					</div>
+					<div class="line" id="coors"></div>
 				</div>
-				<div id="result"></div>
+				<textarea id="result"></textarea>
 			</div>
 		</div>
 	</div>
