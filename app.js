@@ -7,7 +7,7 @@ jQuery(document).ready(function($) {
 
 	// 
 	function setResultHeight(){
-		var h = $(window).height()-160-15*2;
+		var h = $(window).height()-230-15*2;
 		if (h< 50) { h = 50 }
 		$('#result').height(h);
 	}
@@ -111,21 +111,50 @@ jQuery(document).ready(function($) {
 			var pEnd = new BMap.Point(d.maxX,d.maxY);
 			var bs = new BMap.Bounds(pStart,pEnd);   //自己规定范围
 			coors = [d.x,d.y, d.maxX,d.maxY];
-			$('#coors').text(coors.join(','))
-
+			takeCoorsToInputs(coors[0],coors[1],coors[2],coors[3])
 			local.searchInBounds(word, bs);
 		}else if (search_type=="bound"){
 			var bs = map.getBounds();
 			console.info('bound', bs)
 			coors = [bs.Je,bs.Ie, bs.Ee,bs.De];
-			$('#coors').text(coors.join(','))
-
+			takeCoorsToInputs(coors[0],coors[1],coors[2],coors[3])
 			local.searchInBounds(word, bs);
 		}else {
 			coors = [];
-			$('#coors').text(coors.join(','))
+			var x = $.trim($('#inputLng').val()),
+					y = $.trim($('#inputLat').val()),
+					maxX = $.trim($('#inputLngMax').val()),
+					maxY = $.trim($('#inputLatMax').val());
+			if (x==""&&y==""&&maxX==""&&maxY==""){
+				local.search(word);
+			}else {
+				if (x==""||y==""||maxX==""||maxY==""){
+					alertify.error("完善坐标数据");
+					return false;
+				}
+				if (!$.isNumeric(x) || !$.isNumeric(y) || !$.isNumeric(maxX) || !$.isNumeric(maxY)){
+					alertify.error("坐标只能输入数字")
+					return false;
+				}else {
+					x = parseFloat(x),
+					y = parseFloat(y),
+					maxX = parseFloat(maxX),
+					maxY = parseFloat(maxY);
+
+					if (x>maxX || y>maxY){
+						alertify.error("坐标只能输入数字")
+						return false;
+					}else {
+						var pStart = new BMap.Point(x,y);
+						var pEnd = new BMap.Point(maxX,maxY);
+						var bs = new BMap.Bounds(pStart,pEnd);   //自己规定范围
+						coors = [x,y, maxX,maxY];
+						local.searchInBounds(word, bs);
+					}
+				}
+			}
+			// takeCoorsToInputs('','', '','')
 			
-			local.search(word);
 		}	
 	}
 	$('#btnSearchWord').click(function(){
@@ -140,14 +169,31 @@ jQuery(document).ready(function($) {
 
 	$('input#enableRect').change(function(){
 		$('input#enableBound').prop('checked',false);
-		if (this.checked)
+		if (this.checked){
 			alertify.alert('启用画框查询后，直接在地图点击任意两点，'+
 				'会自动出现矩形，查询数据会限于矩形内，再点击"查询".');
+			$('input.td-input').attr("disabled", 'disabled')
+		}else {
+			$('input.td-input').removeAttr('disabled');
+		}
+			
 	});
 
 	$('input#enableBound').change(function(){
 		$('input#enableRect').prop('checked',false);
+		if (this.checked){
+			$('input.td-input').attr("disabled", 'disabled')
+		}else {
+			$('input.td-input').removeAttr('disabled');
+		}
 	});
+
+	function takeCoorsToInputs(x, y, maxX, maxY){
+		$('#inputLng').val(x);
+		$('#inputLat').val(y);
+		$('#inputLngMax').val(maxX);
+		$('#inputLatMax').val(maxY);
+	}
 
 	// ==================
 

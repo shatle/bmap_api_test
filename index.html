@@ -40,7 +40,7 @@
 		width: 100%;
 	}
 	#commands {
-		height: 150px;
+		height: 220px;
 		border-bottom: 2px solid #DDD;
 	}
 	#result {
@@ -53,6 +53,12 @@
 		color: red;
     font-weight: bold;
 	}
+
+	#inputTable {
+		width: 100%;
+		margin: 0 -15px 0 -15px;
+	}
+	#inputTable td input { width: 90%;}
 	</style>
 	<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=XNTuIUSmOsyVxNHatYQvweYhelAt2RGz"></script>
 	<title>地图展示</title>
@@ -87,12 +93,44 @@
 						<label for="">当前地图视野范围内查询</label>
 						<input type="checkbox" id="enableBound">
 					</div>
+
+					<div class="line">
+						<table id="inputTable">
+							<thead>
+								<tr>
+									<th style="width: 40px;"></th>
+									<th>lng 经度</th>
+									<th>lat 纬度</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td>最小</td>
+									<td>
+										<input class="td-input" type="text" id="inputLng">
+									</td>
+									<td>
+										<input class="td-input" type="text" id="inputLat">
+									</td>
+								</tr>
+								<tr>
+									<td>最大</td>
+									<td>
+										<input class="td-input" type="text" id="inputLngMax">
+									</td>
+									<td>
+										<input class="td-input" type="text" id="inputLatMax">
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+					
 					<div class="line">
 						<button id="btnSearchWord">查询</button>
 						<label for="">结果数(现在最大50):<span id="resultCount">0</span></label>
 						<button id="btnOutput">结果输出文件</button>
 					</div>
-					<div class="line" id="coors"></div>
 				</div>
 				<textarea id="result"></textarea>
 			</div>
