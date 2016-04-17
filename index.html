@@ -40,7 +40,7 @@
 		width: 100%;
 	}
 	#commands {
-		height: 110px;
+		height: 130px;
 		border-bottom: 2px solid #DDD;
 	}
 	#result {
@@ -72,17 +72,22 @@
 						<button id="btnAreaNum" class="reload-city">确定</button>
 					</div>
 					<div class="line">
-						<label for="">最大结果数</label>
-						<input type="text" style="width:80px;" id="inputSearchMaxSize" value="10">
-					</div>
-					<div class="line">
+						<label for="">查询内容</label>
 						<input type="text" style="width:80px;" id="inputSearchWord">
-						<button id="btnSearchWord">查询</button>
-						<label for="">结果数:<span id="resultCount">0</span></label>
 					</div>
 					<div class="line" title="(过大时可能会出现无结果)">
-						<label for="">当前地图视野范围内搜索</label>
-						<button id="btnSearchWordByBound">查询</button>
+						<label for="">启用画框查询</label>
+						<input type="checkbox" id="enableRect">
+						<button id="btnClearRect">清除画框</button>
+					</div>
+					<div class="line" title="(过大时可能会出现无结果)">
+						<label for="">当前地图视野范围内查询</label>
+						<input type="checkbox" id="enableBound">
+					</div>
+					<div class="line">
+						<button id="btnSearchWord">查询</button>
+						<label for="">结果数(现在最大50):<span id="resultCount">0</span></label>
+						<button id="btnOutput">结果输出文件</button>
 					</div>
 				</div>
 				<div id="result"></div>
@@ -94,3 +99,4 @@
 </html>
 <script type="text/javascript" src="./alertify.min.js"></script>
 <script type="text/javascript" src="./app.js"></script>
+<script type="text/javascript" src="./FileSaver.min.js"></script>
