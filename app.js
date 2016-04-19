@@ -7,7 +7,7 @@ jQuery(document).ready(function($) {
 
 	// 
 	function setResultHeight(){
-		var h = $(window).height()-230-15*2;
+		var h = $(window).height()-250-15*2;
 		if (h< 50) { h = 50 }
 		$('#result').height(h);
 	}
@@ -91,11 +91,12 @@ jQuery(document).ready(function($) {
 		};
 		var local = new BMap.LocalSearch(map, options);
 
-		var search_type = null;
-		if ($('input#enableRect').length&&$('input#enableRect')[0].checked){
-			search_type = 'rect';
-		}else if ($('input#enableBound').length&&$('input#enableBound')[0].checked){
-			search_type = 'bound';
+		if (!search_type){
+			if ($('input#enableRect').length&&$('input#enableRect')[0].checked){
+				search_type = 'rect';
+			}else if ($('input#enableBound').length&&$('input#enableBound')[0].checked){
+				search_type = 'bound';
+			}
 		}
 
 		console.info('search_type', search_type )
@@ -142,13 +143,17 @@ jQuery(document).ready(function($) {
 					maxY = parseFloat(maxY);
 
 					if (x>maxX || y>maxY){
-						alertify.error("坐标只能输入数字")
+						alertify.error("请输入正确数值")
 						return false;
 					}else {
 						var pStart = new BMap.Point(x,y);
 						var pEnd = new BMap.Point(maxX,maxY);
 						var bs = new BMap.Bounds(pStart,pEnd);   //自己规定范围
 						coors = [x,y, maxX,maxY];
+						if (search_type=="direction"){
+							mapRect(maxX,x,maxY,y);
+							coors = [x,y, maxX,maxY];
+						}
 						local.searchInBounds(word, bs);
 					}
 				}
@@ -189,10 +194,10 @@ jQuery(document).ready(function($) {
 	});
 
 	function takeCoorsToInputs(x, y, maxX, maxY){
-		$('#inputLng').val(x);
-		$('#inputLat').val(y);
-		$('#inputLngMax').val(maxX);
-		$('#inputLatMax').val(maxY);
+		$('#inputLng').val(parseFloat(x).toFixed(6));
+		$('#inputLat').val(parseFloat(y).toFixed(6));
+		$('#inputLngMax').val(parseFloat(maxX).toFixed(6));
+		$('#inputLatMax').val(parseFloat(maxY).toFixed(6));
 	}
 
 	// ==================
@@ -251,6 +256,7 @@ jQuery(document).ready(function($) {
 			console.info("-click_points---", click_points)
 			if (click_points.length==2){
 				var d = getCoorData(click_points);
+				takeCoorsToInputs(d.x,d.y,d.maxX,d.maxY);
 				if (d)	mapRect(d.maxX, d.x, d.maxY, d.y);
 			}
 		}		
@@ -306,7 +312,76 @@ jQuery(document).ready(function($) {
 					saveAs(blob, dateStr+'_'+coors.join('_')+".csv");
 		    }
 		} catch (e) {}
-	})
+	});
+
+	function checkDataRange(){
+		var x = $.trim($('#inputLng').val()),
+				y = $.trim($('#inputLat').val()),
+				maxX = $.trim($('#inputLngMax').val()),
+				maxY = $.trim($('#inputLatMax').val());
+		if (x==""&&y==""&&maxX==""&&maxY==""){
+			return false;
+		}else {
+			if (x==""||y==""||maxX==""||maxY==""){
+				alertify.error("完善坐标数据");
+				return false;
+			}
+			if (!$.isNumeric(x) || !$.isNumeric(y) || !$.isNumeric(maxX) || !$.isNumeric(maxY)){
+				alertify.error("坐标只能输入数字")
+				return false;
+			}else {
+				x = parseFloat(x),
+				y = parseFloat(y),
+				maxX = parseFloat(maxX),
+				maxY = parseFloat(maxY);
+
+				if (x<0 || maxX <0 || y< 0 || maxY < 0 || x>maxX || y>maxY){
+					alertify.error("请输入正确数值")
+					return false;
+				}else if ( maxX>(x+10) || maxY>(x+10)) {
+					alertify.error("经纬度差距大于10")
+					return false;
+				}
+			}
+		}
+		return [x,y,maxX,maxY];
+	}
 	
-	// 
+	// direction s
+	$('#btnLeft').click(function(e){
+		var check_data = checkDataRange();
+		if (check_data){
+			var span = check_data[2]-check_data[0];
+			console.info("-btnLeft span--", span)
+			takeCoorsToInputs(check_data[0]-span,check_data[1],check_data[2]-span,check_data[3])
+			searchWord("direction");
+		}
+	})
+	$('#btnRight').click(function(e){
+		var check_data = checkDataRange();
+		if (check_data){
+			var span = check_data[2]-check_data[0];
+			console.info("-btnRight span--", span)
+			takeCoorsToInputs(check_data[0]+span,check_data[1],check_data[2]+span,check_data[3])
+			searchWord("direction");
+		}
+	})
+	$('#btnUp').click(function(e){
+		var check_data = checkDataRange();
+		if (check_data){
+			var span = check_data[3]-check_data[1];
+			console.info("-btnUp span--", span)
+			takeCoorsToInputs(check_data[0],check_data[1]+span,check_data[2],check_data[3]+span)
+			searchWord("direction");
+		}
+	})
+	$('#btnDown').click(function(e){
+		var check_data = checkDataRange();
+		if (check_data){
+			var span = check_data[3]-check_data[1];
+			console.info("-btnDown span--", span)
+			takeCoorsToInputs(check_data[0],check_data[1]-span,check_data[2],check_data[3]-span)
+			searchWord("direction");
+		}
+	})
 });

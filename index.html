@@ -40,7 +40,7 @@
 		width: 100%;
 	}
 	#commands {
-		height: 220px;
+		height: 240px;
 		border-bottom: 2px solid #DDD;
 	}
 	#result {
@@ -125,11 +125,18 @@
 							</tbody>
 						</table>
 					</div>
+
+					<div class="line">
+						<button id="btnLeft" class="btn btn-sm">向左</button>
+						<button id="btnRight" class="btn btn-sm">向右</button>
+						<button id="btnUp" class="btn btn-sm">向上</button>
+						<button id="btnDown" class="btn btn-sm">向下</button>
+					</div>
 					
 					<div class="line">
 						<button id="btnSearchWord">查询</button>
 						<label for="">结果数(现在最大50):<span id="resultCount">0</span></label>
-						<button id="btnOutput">结果输出文件</button>
+						<button id="btnOutput">输出文件</button>
 					</div>
 				</div>
 				<textarea id="result"></textarea>
